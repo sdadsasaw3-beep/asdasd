@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Union — Discord Bot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --gold: #D4AF37;
+            --gold-light: #e5c455;
+            --bg-dark: #0a0a15;
+            --bg-card: rgba(30, 30, 50, 0.7);
+            --border: rgba(212, 175, 55, 0.2);
+            --text: #e0e0e0;
+            --text-muted: #888;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .stars {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background:
+                radial-gradient(2px 2px at 20% 30%, #fff, transparent),
+                radial-gradient(2px 2px at 60% 70%, #fff, transparent),
+                radial-gradient(1px 1px at 50% 50%, #fff, transparent),
+                radial-gradient(1px 1px at 80% 10%, #fff, transparent),
+                radial-gradient(2px 2px at 90% 60%, #fff, transparent),
+                radial-gradient(1px 1px at 33% 80%, #fff, transparent);
+            background-size: 200% 200%;
+            opacity: 0.3;
+            animation: twinkle 8s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            from { opacity: 0.2; }
+            to { opacity: 0.4; }
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 10, 21, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-family: 'Cinzel', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--gold); }
+
+        .btn-nav {
+            padding: 8px 16px;
+            background: var(--gold);
+            color: var(--bg-dark) !important;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-nav:hover { background: var(--gold-light); }
+
+        .hero {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 80px 24px;
+        }
+
+        .hero-content { max-width: 800px; }
+
+        .badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            color: var(--gold);
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .hero-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(60px, 12vw, 120px);
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 8px;
+            margin-bottom: 24px;
+            text-shadow: 0 0 40px rgba(212, 175, 55, 0.3);
+        }
+
+        .hero-subtitle {
+            font-size: clamp(16px, 2vw, 20px);
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 60px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--bg-dark);
+        }
+
+        .btn-primary:hover {
+            background: var(--gold-light);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--gold);
+            border: 1px solid var(--gold);
+        }
+
+        .btn-secondary:hover { background: rgba(212, 175, 55, 0.1); }
+
+        .hero-stats {
+            display: flex;
+            gap: 60px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .stat-value {
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--gold);
+            font-family: 'Cinzel', serif;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .section {
+            padding: 100px 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-dark {
+            background: rgba(0, 0, 0, 0.3);
+            max-width: none;
+        }
+
+        .section-dark > * {
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(32px, 5vw, 48px);
+            text-align: center;
+            color: var(--gold);
+            margin-bottom: 60px;
+            letter-spacing: 2px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .feature {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            transition: all 0.3s;
+        }
+
+        .feature:hover {
+            transform: translateY(-4px);
+            border-color: var(--gold);
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 16px;
+        }
+
+        .feature h3 {
+            font-size: 20px;
+            color: var(--gold);
+            margin-bottom: 12px;
+        }
+
+        .feature p {
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .command {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.2s;
+        }
+
+        .command:hover {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .command code {
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--gold);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .command span {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .docs-nav {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 48px;
+        }
+
+        .docs-nav button {
+            padding: 10px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .docs-nav button:hover {
+            border-color: var(--gold);
+            color: var(--text);
+        }
+
+        .docs-nav button.active {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: var(--bg-dark);
+            font-weight: 600;
+        }
+
+        .docs-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 48px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .docs-panel { display: none; }
+        .docs-panel.active { display: block; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .docs-content h3 {
+            color: var(--gold);
+            font-family: 'Cinzel', serif;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .docs-content h4 {
+            color: var(--gold);
+            font-size: 18px;
+            margin-top: 32px;
+            margin-bottom: 12px;
+            border-left: 3px solid var(--gold);
+            padding-left: 12px;
+        }
+
+        .docs-content h4:first-of-type { margin-top: 24px; }
+
+        .docs-content p {
+            color: var(--text);
+            margin-bottom: 14px;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .docs-content ul {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .docs-content ul li {
+            padding: 8px 0 8px 24px;
+            position: relative;
+            color: var(--text);
+            font-size: 15px;
+        }
+
+        .docs-content ul li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        .docs-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 24px;
+            font-size: 14px;
+        }
+
+        .docs-content th {
+            text-align: left;
+            padding: 12px;
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .docs-content td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+        }
+
+        .docs-content td:first-child { color: var(--text); font-weight: 500; }
+
+        .docs-content code {
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--gold);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .tip {
+            background: rgba(212, 175, 55, 0.08);
+            border-left: 3px solid var(--gold);
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .tip strong { color: var(--gold); }
+
+        .partner-card {
+            background: var(--bg-card);
+            border: 1px solid var(--gold);
+            border-radius: 16px;
+            padding: 48px;
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .partner-card p {
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 24px;
+        }
+
+        .partner-card strong { color: var(--gold); }
+
+        .partner-list {
+            list-style: none;
+            text-align: left;
+            display: inline-block;
+            margin-bottom: 32px;
+        }
+
+        .partner-list li {
+            padding: 8px 0;
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .team-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px 24px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .team-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--gold);
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.15);
+        }
+
+        .team-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #D4AF37 0%, #e5c455 100%);
+            color: var(--bg-dark);
+            font-family: 'Cinzel', serif;
+            font-size: 36px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            border: 2px solid var(--gold);
+        }
+
+        .team-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .team-role {
+            font-size: 14px;
+            color: var(--gold);
+            font-weight: 500;
+        }
+
+        .footer {
+            padding: 40px 24px;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .footer-small {
+            font-size: 12px;
+            margin-top: 8px;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { gap: 12px; }
+            .nav-links a:not(.btn-nav) { display: none; }
+            .hero-stats { gap: 32px; }
+            .stat-value { font-size: 32px; }
+            .partner-card { padding: 32px 24px; }
+            .docs-content { padding: 28px 20px; }
+            .docs-content table { font-size: 12px; }
+            .docs-content th, .docs-content td { padding: 8px; }
+            .team-avatar { width: 64px; height: 64px; font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars"></div>
+
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">👑 UNION</div>
+            <div class="nav-links">
+                <a href="#features">Возможности</a>
+                <a href="#commands">Команды</a>
+                <a href="#docs">Документация</a>
+                <a href="#partners">Партнёрам</a>
+                <a href="https://lolka.app/bot-authorize?client_id=ac0c3d46-7462-45a0-99a4-8da590ba2fff" class="btn-nav" target="_blank">Добавить</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="badge">✨ Королевский Discord-бот</div>
+            <h1 class="hero-title">UNION</h1>
+            <p class="hero-subtitle">
+                Экономика, казино, кланы, питомцы и ивенты.<br>
+                Твоё королевство ждёт.
+            </p>
+            <div class="hero-buttons">
+                <a href="https://lolka.app/bot-authorize?client_id=ac0c3d46-7462-45a0-99a4-8da590ba2fff" class="btn btn-primary" target="_blank">
+                    👑 Добавить на сервер
+                </a>
+                <a href="#commands" class="btn btn-secondary">
+                    📜 Команды
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-value" data-count="120">0</div>
+                    <div class="stat-label">Участников</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" data-count="40">0</div>
+                    <div class="stat-label">Команд</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="section">
+        <h2 class="section-title">⚔️ Возможности</h2>
+        <div class="grid">
+            <div class="feature">
+                <div class="feature-icon">💰</div>
+                <h3>Экономика</h3>
+                <p>Зарабатывай монеты, покупай предметы, копи на VIP и становись олигархом.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎰</div>
+                <h3>Казино</h3>
+                <p>Монетка, рулетка и слоты. Испытай удачу и сорви джекпот x50.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🏰</div>
+                <h3>Кланы</h3>
+                <p>Создавай клан, качай уровень, вкладывай в казну и воюй за топ.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🐾</div>
+                <h3>Питомцы</h3>
+                <p>Волк, Дракон или Феникс. Корми, качай и собирай доход каждый час.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎉</div>
+                <h3>Ивенты</h3>
+                <p>Розыгрыши, дропы, глобальные ивенты с множителем x2 и x10.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🏆</div>
+                <h3>Достижения</h3>
+                <p>Выполняй ачивки и получай VIP, монеты и уникальные награды.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="commands" class="section section-dark">
+        <h2 class="section-title">📜 Основные команды</h2>
+        <div class="commands-grid">
+            <div class="command"><code>/баланс</code><span>Посмотреть баланс</span></div>
+            <div class="command"><code>/работать</code><span>Заработать монеты</span></div>
+            <div class="command"><code>/ежедневно</code><span>Ежедневная награда</span></div>
+            <div class="command"><code>/казино</code><span>Играть в казино</span></div>
+            <div class="command"><code>/магазин</code><span>Купить предметы</span></div>
+            <div class="command"><code>/клансоздать</code><span>Создать клан</span></div>
+            <div class="command"><code>/питомцы</code><span>Магазин питомцев</span></div>
+            <div class="command"><code>/профиль</code><span>Карточка игрока</span></div>
+            <div class="command"><code>/розыгрыш</code><span>Создать розыгрыш</span></div>
+            <div class="command"><code>/промокод</code><span>Активировать промокод</span></div>
+        </div>
+    </section>
+
+    <section id="docs" class="section">
+        <h2 class="section-title">📖 Документация</h2>
+
+        <div class="docs-nav">
+            <button class="active" data-tab="economy">💰 Экономика</button>
+            <button data-tab="casino">🎰 Казино</button>
+            <button data-tab="clans">🏰 Кланы</button>
+            <button data-tab="pets">🐾 Питомцы</button>
+            <button data-tab="vip">👑 VIP</button>
+            <button data-tab="promo">🎁 Промокоды</button>
+            <button data-tab="achieve">🏆 Достижения</button>
+        </div>
+
+        <div class="docs-content">
+            <div class="docs-panel active" id="panel-economy">
+                <h3>💰 Экономика</h3>
+                <p>Основная валюта — <strong>◈</strong> (золотые монеты). Зарабатывай их и трать на предметы, VIP и кланы.</p>
+                <h4>Как заработать</h4>
+                <table>
+                    <tr><th>Способ</th><th>Награда</th><th>Кулдаун</th></tr>
+                    <tr><td><code>/работать</code></td><td>200–500 ◈</td><td>1 час</td></tr>
+                    <tr><td><code>/ежедневно</code></td><td>300–700 ◈</td><td>24 часа</td></tr>
+                    <tr><td>Казино</td><td>до x50</td><td>—</td></tr>
+                    <tr><td>Дропы (владелец)</td><td>любая</td><td>—</td></tr>
+                </table>
+                <h4>Магазин</h4>
+                <ul>
+                    <li><strong>👑 VIP-статус</strong> — 5 000 ◈</li>
+                    <li><strong>🎁 Сундук</strong> — 1 500 ◈</li>
+                    <li><strong>💎 Корона</strong> — 10 000 ◈</li>
+                </ul>
+                <div class="tip">
+                    <strong>💡 Совет:</strong> активируй подписку — она даёт множитель к наградам (VIP ×2, LEGEND ×67). С ней <code>/работать</code> приносит в разы больше.
+                </div>
+                <h4>Перевод монет</h4>
+                <p>Команда <code>/передать @юзер сумма</code> — переводит монеты другому игроку. Комиссии нет.</p>
+            </div>
+
+            <div class="docs-panel" id="panel-casino">
+                <h3>🎰 Казино</h3>
+                <p>Три игры на выбор. Ставка — от 10 до 10 000 ◈ за раунд.</p>
+                <h4>🪙 Монетка</h4>
+                <p>Орёл или решка. Шанс выигрыша — 50%. Множитель — <strong>x2</strong>.</p>
+                <h4>🔴 Рулетка</h4>
+                <p>Красное / Чёрное / Зеро. Обычная победа — <strong>x2</strong>, выпадение Зеро — <strong>x14</strong> джекпот.</p>
+                <h4>🎰 Слоты</h4>
+                <p>Три барабана с символами 🍒 🍋 🔔 💎 👑 7️⃣. Комбинации:</p>
+                <table>
+                    <tr><th>Комбинация</th><th>Выплата</th></tr>
+                    <tr><td>7️⃣ 7️⃣ 7️⃣</td><td>x50 (джекпот)</td></tr>
+                    <tr><td>👑 👑 👑</td><td>x20</td></tr>
+                    <tr><td>💎 💎 💎</td><td>x10</td></tr>
+                    <tr><td>Любые три одинаковые</td><td>x5</td></tr>
+                    <tr><td>Две одинаковые</td><td>возврат ставки</td></tr>
+                    <tr><td>Всё разное</td><td>проигрыш</td></tr>
+                </table>
+                <div class="tip">
+                    <strong>⚠️ Помни:</strong> казино — это риск. Не ставь больше, чем готов потерять. Джекпот x50 в слотах даёт достижение «🎰 Король казино» и +10 000 ◈ сверху.
+                </div>
+            </div>
+
+            <div class="docs-panel" id="panel-clans">
+                <h3>🏰 Кланы</h3>
+                <p>Объединяйся с друзьями, качай клан и воюй за место в топе.</p>
+                <h4>Создание</h4>
+                <p>Команда <code>/клансоздать ТЕГ Название</code>. Стоимость — <strong>5 000 ◈</strong>. Тег — 2–6 символов (буквы/цифры), название — 3–40.</p>
+                <h4>Участники</h4>
+                <ul>
+                    <li>Максимум <strong>20 человек</strong> в клане</li>
+                    <li>Лидер не может выйти из клана (только распустить или передать)</li>
+                    <li>Вступить: <code>/кланвступить ТЕГ</code></li>
+                    <li>Выйти: <code>/кланвыйти</code></li>
+                </ul>
+                <h4>Казна и уровни</h4>
+                <table>
+                    <tr><th>Действие</th><th>Команда</th><th>Цена</th></tr>
+                    <tr><td>Внести в казну</td><td><code>/кланвложить сумма</code></td><td>—</td></tr>
+                    <tr><td>Посмотреть казну</td><td><code>/кланказна</code></td><td>—</td></tr>
+                    <tr><td>Улучшить клан</td><td><code>/кланулучшить</code></td><td>3 000 × уровень</td></tr>
+                </table>
+                <p>Максимальный уровень — <strong>10</strong>. Каждый уровень даёт клану престиж и место в топе.</p>
+                <div class="tip">
+                    <strong>👑 Совет:</strong> вкладывайте в казну вместе — так быстрее прокачаете клан и попадёте в топ-10 на <code>/кланы</code>.
+                </div>
+            </div>
+
+            <div class="docs-panel" id="panel-pets">
+                <h3>🐾 Питомцы</h3>
+                <p>Купи верного друга, корми его и собирай доход каждый час.</p>
+                <h4>Виды питомцев</h4>
+                <table>
+                    <tr><th>Питомец</th><th>Цена</th><th>Доход/час</th></tr>
+                    <tr><td>🐺 Волк</td><td>5 000 ◈</td><td>150 ◈</td></tr>
+                    <tr><td>🐉 Дракон</td><td>25 000 ◈</td><td>800 ◈</td></tr>
+                    <tr><td>🔥 Феникс</td><td>50 000 ◈</td><td>2 000 ◈</td></tr>
+                </table>
+                <h4>Как это работает</h4>
+                <ul>
+                    <li><code>/купить_питомца</code> — купить (можно дать имя)</li>
+                    <li><code>/мой_питомец</code> — собрать доход (раз в час)</li>
+                    <li><code>/кормить</code> — +25 опыта питомцу (1 000 ◈)</li>
+                </ul>
+                <h4>Уровни</h4>
+                <p>Каждые <strong>100 опыта</strong> — новый уровень. Доход умножается на уровень: чем выше уровень, тем больше монет за час.</p>
+                <div class="tip">
+                    <strong>💡 Совет:</strong> Феникс окупается за 25 часов, Дракон — за 31 час, Волк — за 33 часа. Если играешь вдолгую — бери Феникса.
+                </div>
+            </div>
+
+            <div class="docs-panel" id="panel-vip">
+                <h3>👑 Подписки VIP</h3>
+                <p>Подписка даёт <strong>множитель ко всем наградам</strong>: работа, ежедневка, дропы, питомцы.</p>
+                <h4>Типы подписок</h4>
+                <table>
+                    <tr><th>Тип</th><th>Множитель</th></tr>
+                    <tr><td>👑 VIP</td><td>×2</td></tr>
+                    <tr><td>💎 PREMIUM</td><td>×3</td></tr>
+                    <tr><td>🔥 PREMIUM MAX</td><td>×5</td></tr>
+                    <tr><td>🌟 LEGEND</td><td>×67</td></tr>
+                </table>
+                <h4>Как получить</h4>
+                <ul>
+                    <li>Купить в магазине (<code>/магазин</code> → <code>/купить vip</code>)</li>
+                    <li>Активировать промокод (<code>/промокод VIPGIFT</code>)</li>
+                    <li>Выполнить достижение «💰 Олигарх» (накопить 100 000 ◈ → VIP на 3 дня)</li>
+                    <li>Ивенты и раздачи от администрации</li>
+                </ul>
+                <h4>Проверка статуса</h4>
+                <p>Команда <code>/вип</code> — покажет тип подписки, дату окончания и текущий множитель.</p>
+                <div class="tip">
+                    <strong>⚡ Важно:</strong> подписки стакаются по времени. Если у тебя уже есть VIP, а ты активируешь новый — дни суммируются, а тип заменяется на более мощный.
+                </div>
+            </div>
+
+            <div class="docs-panel" id="panel-promo">
+                <h3>🎁 Промокоды</h3>
+                <p>Вводи <code>/промокод КОД</code> — получай монеты или VIP. Каждый код можно активировать <strong>один раз</strong> на аккаунт.</p>
+                <h4>Известные коды</h4>
+                <table>
+                    <tr><th>Код</th><th>Награда</th><th>Лимит</th></tr>
+                    <tr><td><code>UNION123</code></td><td>1 000 ◈</td><td>2 активации</td></tr>
+                    <tr><td><code>ROYAL2026</code></td><td>2 500 ◈</td><td>10 активаций</td></tr>
+                    <tr><td><code>VIPGIFT</code></td><td>VIP на 30 дней</td><td>5 активаций</td></tr>
+                    <tr><td><code>TOXXXAAA</code></td><td>50 000 ◈</td><td>1 активация</td></tr>
+                </table>
+                <h4>Где брать новые коды</h4>
+                <ul>
+                    <li>В канале новостей сервера</li>
+                    <li>В ивентах и розыгрышах</li>
+                    <li>У администрации в ЛС (по праздникам)</li>
+                </ul>
+                <div class="tip">
+                    <strong>🚫 Осторожно:</strong> не вводи коды из подозрительных источников — они могут быть фейками. Официальные коды всегда публикует администрация сервера.
+                </div>
+            </div>
+
+            <div class="docs-panel" id="panel-achieve">
+                <h3>🏆 Достижения</h3>
+                <p>Выполняй условия — получай награды. Прогресс можно смотреть в <code>/достижения</code> и <code>/профиль</code>.</p>
+                <h4>Список достижений</h4>
+                <table>
+                    <tr><th>Достижение</th><th>Условие</th><th>Награда</th></tr>
+                    <tr><td>🏃‍♂️ Работяга</td><td>10 работ</td><td>+2 000 ◈</td></tr>
+                    <tr><td>💼 Трудоголик</td><td>100 работ</td><td>+20 000 ◈</td></tr>
+                    <tr><td>💰 Олигарх</td><td>Накопить 100 000 ◈</td><td>VIP на 3 дня</td></tr>
+                    <tr><td>👑 Миллионер</td><td>Накопить 1 000 000 ◈</td><td>+100 000 ◈</td></tr>
+                    <tr><td>🎰 Король казино</td><td>Джекпот x50 в слотах</td><td>+10 000 ◈</td></tr>
+                </table>
+                <h4>Как работают</h4>
+                <ul>
+                    <li>Достижения выдаются <strong>автоматически</strong> при выполнении условия</li>
+                    <li>Награда начисляется сразу, уведомление приходит в канал</li>
+                    <li>Каждое достижение можно получить <strong>один раз</strong></li>
+                </ul>
+                <div class="tip">
+                    <strong>💡 Стратегия:</strong> быстрее всего «Трудоголика» получить, если работать каждый час — 100 работ ≈ 4 дня. А «Миллионер» — цель на долгую игру с VIP-подпиской.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="partners" class="section section-dark">
+        <h2 class="section-title">🤝 Партнёрам</h2>
+        <div class="partner-card">
+            <p>
+                Ищешь надёжного партнёра для взаимного пиара?<br>
+                <strong>Union</strong> открыт к сотрудничеству.
+            </p>
+            <ul class="partner-list">
+                <li>✅ Взаимные упоминания в каналах</li>
+                <li>✅ Совместные ивенты и розыгрыши</li>
+                <li>✅ Кросс-промо и обмен аудиторией</li>
+                <li>✅ Честные условия без накрутки</li>
+            </ul>
+            <a href="https://lolka.app/bot-authorize?client_id=ac0c3d46-7462-45a0-99a4-8da590ba2fff" class="btn btn-primary" target="_blank">
+                📩 Написать нам
+            </a>
+        </div>
+    </section>
+
+    <section id="team" class="section">
+        <h2 class="section-title">🤝 Команда проекта</h2>
+        <div class="team-grid">
+            <div class="team-card">
+                <div class="team-avatar">M</div>
+                <div class="team-name">milk</div>
+                <div class="team-role">💻 Разработчик</div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar">Y</div>
+                <div class="team-name">yumolk</div>
+                <div class="team-role">🛡️ Админ</div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar">U</div>
+                <div class="team-name">user</div>
+                <div class="team-role">🛡️ Админ</div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>👑 Union © 2026 • Создано с любовью к Discord</p>
+        <p class="footer-small">Не связан с Discord Inc.</p>
+    </footer>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        const stats = document.querySelectorAll('.stat-value');
+
+        const animateCounter = (el) => {
+            const target = parseInt(el.dataset.count);
+            const duration = 2000;
+            const step = target / (duration / 16);
+            let current = 0;
+
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    el.textContent = target.toLocaleString('ru-RU') + '+';
+                    clearInterval(timer);
+                } else {
+                    el.textContent = Math.floor(current).toLocaleString('ru-RU');
+                }
+            }, 16);
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        stats.forEach(stat => observer.observe(stat));
+
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.feature, .command, .partner-card, .team-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            sectionObserver.observe(el);
+        });
+
+        document.querySelectorAll('.docs-nav button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+                document.querySelectorAll('.docs-nav button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.querySelectorAll('.docs-panel').forEach(p => p.classList.remove('active'));
+                document.getElementById('panel-' + tab).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
